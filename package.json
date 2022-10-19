@@ -1,0 +1,33 @@
+{
+    "private": true,
+    "scripts": {
+        "dev": "npx mix",
+        "development": "npx mix",
+        "watch": "npx mix watch",
+        "watch-poll": "npx mix watch -- --watch-options-poll=1000",
+        "prod": "npx mix --production"
+    },
+    "devDependencies": {
+        "axios": "^0.27",
+        "laravel-vite-plugin": "^0.6.0",
+        "lodash": "^4.17.19",
+        "postcss": "^8.1.14",
+        "resolve-url-loader": "^5.0.0",
+        "sass": "^1.55.0",
+        "sass-loader": "^12.1.0",
+        "vite": "^3.0.0",
+        "vue": "^2.4.16",
+        "vue-loader": "^15.9.8",
+        "vue-router": "3",
+        "vue-select2": "^0.2.6",
+        "vue-template-compiler": "^2.4.16",
+        "vue2-autocomplete-js": "^0.2.2",
+        "vuetable-2": "^2.0.0-beta.4",
+        "vuex": "3"
+    },
+    "dependencies": {
+        "bootstrap": "4",
+        "bootstrap-vue": "^2.22.0",
+        "laravel-mix": "^6.0.49"
+    }
+}
