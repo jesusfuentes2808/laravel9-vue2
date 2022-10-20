@@ -16,9 +16,7 @@ export default new Vuex.Store({
     },
     actions: {
         async setIVA({commit}){
-            console.log("GETIVA");
             const response = await axios.get(route('api.iva.get'));
-            console.log(response.data.data.iva);
             commit('setIVA', response.data.data.iva);
         },
     },

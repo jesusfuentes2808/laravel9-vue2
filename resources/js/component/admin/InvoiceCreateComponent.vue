@@ -148,7 +148,6 @@
         },
         mounted() {
             this.fetchProducts();
-            console.log(this.productList);
         },
         computed: mapGetters(["productList", "iva", "errorInvoiceCreate"]),
         methods: {
@@ -156,7 +155,6 @@
             getTotal: function(){
                 this.form.total =0;
                 this.form.products.forEach((item)=>{
-                    console.log(parseFloat(item.price_total));
                     this.form.total += parseFloat(item.price_total);
                 });
                 this.form.total = this.form.total.toFixed(2);
@@ -166,7 +164,6 @@
             selectProduct: function(sku, index){
                 if(sku == undefined || sku == '') return false;
                 const productSelect = this.productList.find((item) => item.sku === sku);
-                console.log(productSelect);
                 const priceTotal = parseFloat(this.form.products[index].qty * productSelect.price);
                 this.form.products[index].sku = productSelect.sku;
                 this.form.products[index].name = productSelect.name;

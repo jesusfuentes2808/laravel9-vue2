@@ -49,6 +49,7 @@ Route::group([
         Route::get('/{id}', [InvoiceController::class, 'getById'])->name('api.invoice.getById');
         Route::post('', [InvoiceController::class, 'store'])->name('api.invoice.store');
         Route::put('/update', [InvoiceController::class, 'update'])->name('api.invoice.update');
+        Route::post('/delete', [InvoiceController::class, 'delete'])->name('api.invoice.delete');
     });
 
     Route::group([

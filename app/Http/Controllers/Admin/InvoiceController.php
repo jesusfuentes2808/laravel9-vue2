@@ -28,18 +28,47 @@ class InvoiceController extends Controller
     public function get(Request $request){
         try {
             $response = [];
-            $invoices = Invoice::with("saleUser")->orderBy("id", "DESC")
-                        ->skip(0)->limit(10)->get()->toArray();
-            //dd($invoices);
+
+            $currentPage = empty($request->page) ? 1 : $request->page;
+            $pagination = empty($request->paginate) ? 10 : $request->paginate;
+            $paginationStart = ($currentPage-1) * $pagination;
+
+            $invoices = Invoice::with("saleUser");
+
+            $totalInvoices = Invoice::where('id', '!=', '0');
+
+            if($request->filter !== ''){
+                $invoices->whereRaw('LPAD(id ,10,"0") LIKE "%'.$request->filter.'%"')
+                            ->orWhere('client_name','LIKE','%'.$request->filter.'%');
+
+                $totalInvoices->whereRaw('LPAD(id ,10,"0") LIKE "%'.$request->filter.'%"')
+                                ->orWhere('client_name','LIKE','%'.$request->filter.'%');;
+            }
+
+            $invoices = $invoices->orderBy("id", "DESC")->skip($paginationStart)->limit($pagination)->get()->toArray();
+            $totalInvoices = $totalInvoices->count();
+            //$request->paginate;
+            $totalPages = 10;
+
+
+
+            $totalPaginate = ceil($totalInvoices / $pagination);
+
             $invoices = array_map(function($item){
                 return [...$item,
                             'created_at'=> Carbon::parse($item["created_at"])->format("Y-m-d H:i:s"),
                             'invoice_number' => str_pad($item["id"], 10, "0", STR_PAD_LEFT)];
             }, $invoices);
 
+            $table['current_page'] = $currentPage;
+            $table['pagination'] = $pagination;
+            $table['total'] = $totalInvoices;
+
+
             $response['status'] = "OK";
             $response['message'] = "Facturas listadas";
-            $response['data'] = $invoices;
+            $response['data']["list"] = $invoices;
+            $response['data']['table'] = $table;
 
             return response()->json($response, 201);
         } catch (Exception $e) {
@@ -121,7 +150,6 @@ class InvoiceController extends Controller
             $invoice->save();
 
             $invoices = Invoice::with('invoiceDetails')->where('id', $invoice->id)->get();
-
 
 
             $response['status'] = "OK";
@@ -270,7 +298,27 @@ class InvoiceController extends Controller
     }
 
 
-    public function delete(){
+    public function delete(Request $request){
+        DB::beginTransaction();
+        try {
 
+            InvoiceDetail::where('invoice_id', $request->id)->delete();
+            Invoice::where('id', $request->id)->delete();
+
+            $response['status'] = "OK";
+            $response['message'] = "Factura creada";
+            $response['data'] = [];
+
+            DB::commit();
+            return response()->json($response, 201);
+        } catch (Exception $e) {
+
+            DB::rollBack();
+            $response['status'] = "FAIL";
+            $response['message'] = $e->getMessage();
+            $response['data'] = "";
+
+            return response()->json($response, 400);
+        }
     }
 }

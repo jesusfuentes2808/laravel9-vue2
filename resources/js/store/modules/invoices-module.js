@@ -14,14 +14,15 @@ const getters = {
 };
 
 const actions = {
-    async fetchInvoices({commit, rootState}){
+    async fetchInvoices({commit, rootState}, params = ""){
         let config = {
             headers: {
                 Authorization: "Bearer " + rootState.UsersModule.token.token,
             }
         };
-
-        const response = await axios.get(route("api.invoice.get"),  config);
+        if(params != "")
+            params = "?"+params;
+        const response = await axios.get(route("api.invoice.get") + params,  config);
         commit("setInvoiceList", response.data.data);
     },
 
@@ -35,7 +36,6 @@ const actions = {
         await axios.post(route("api.invoice.store"),  data, config).then((response) => {
             commit("setErrorInvoiceCreate", {submit: true, response: response.data})
         }).catch((error) => {
-            console.log(error.response.data);
             commit("setErrorInvoiceCreate", {submit: true, response: error.response.data});
         });
 
@@ -52,11 +52,25 @@ const actions = {
         await axios.put(route("api.invoice.update"),  data, config).then((response) => {
             commit("setErrorInvoiceCreate", {submit: true, response: response.data})
         }).catch((error) => {
-            console.log(error.response.data);
             commit("setErrorInvoiceCreate", {submit: true, response: error.response.data});
         });
 
         //commit("setInvoices", response.data.data);
+    },
+
+    async deleteInvoice({commit, rootState, dispatch}, data){
+        let config = {
+            headers: {
+                Authorization: "Bearer " + rootState.UsersModule.token.token,
+            }
+        };
+
+        await axios.post(route("api.invoice.delete"),  data, config).then((response) => {
+            dispatch("fetchInvoices");
+        }).catch((error) => {
+            console.log(error.response.data);
+        });
+
     },
 
 
@@ -86,8 +100,8 @@ const mutations = {
         state.invoice = invoice
     ),
 
-    setErrorInvoiceCreate: (state, invoiceList) => (
-        state.errorInvoiceCreate = invoiceList
+    setErrorInvoiceCreate: (state, object) => (
+        state.errorInvoiceCreate = object
     ),
 
 };

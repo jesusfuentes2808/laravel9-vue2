@@ -18,6 +18,11 @@
                     </div>
                 </div>
             </div>
+            <div v-if="userNotificationLogin.submit" class="message">
+                <span v-if="userNotificationLogin.response.status === 'FAIL'" style="display: inline-block; margin-bottom: 10px; color: #d93545; font-weight: bold; font-size: 12px">
+                    Por favor, revise sus credenciales
+                </span>
+            </div>
             <div class="row">
                 <!-- /.col -->
                 <div class="col-12">
@@ -42,8 +47,8 @@ import {mapActions, mapGetters, mapState} from "vuex";
             return {
                 form: {
                     user:{
-                        email: "jesusfuentes2808@gmail.com",
-                        password: "jesusfuentes",
+                        email: "",
+                        password: "",
                     }
                 }
             }
@@ -54,9 +59,17 @@ import {mapActions, mapGetters, mapState} from "vuex";
                 this.login(this.form.user);
             },
         },
-        computed: mapGetters(["token"]),
-        mounted() {
-            console.log("MOUNTED");
+        computed: mapGetters(["userNotificationLogin"]),
+        watch: {
+            userNotificationLogin(newVal) {
+                if(newVal.submit === true){
+                    if(newVal.response.status === "OK"){
+                        this.$router.push({
+                            path: "/admin/invoice"
+                        })
+                    }
+                }
+            },
         }
     }
 </script>

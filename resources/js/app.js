@@ -15,8 +15,7 @@ Vue.use(BootstrapVue);
 Vue.use(IconsPlugin);
 //Vue.use(Vuex);
 
-Vue.component('example-component', require('./component/ExampleComponent').default);
-Vue.component('welcome-component', require('./component/WelcomeComponent').default);
+//Vue.component('welcome-component', require('./component/WelcomeComponent').default);
 Vue.component('vue-select', require('vue-select2').default);
 
 import '../css/app.scss';
@@ -30,7 +29,7 @@ router.beforeEach(async (to, from, next) => {
     await store.dispatch('getToken');
     const isAuthenticated = store.getters['token'];
     if ((to.name !== 'login' && to.name !== 'register') && !isAuthenticated) next({ name: 'login' })
-    else if (to.name === 'login' && isAuthenticated) next({name: 'admin.example'})
+    else if (to.name === 'login' && isAuthenticated) next({name: 'admin.invoice'})
     else next();
 });
 

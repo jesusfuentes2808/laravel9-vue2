@@ -16,7 +16,8 @@ const routes = [
             {
                 path: '',
                 name: 'index',
-                component: require('./component/WelcomeComponent').default
+                redirect: "/login",
+                //component: require('./component/LoginComponent').default
             }
         ]
     },
@@ -24,11 +25,6 @@ const routes = [
         path: "/admin",
         component: require('./component/layout/AdminComponent').default,
         children: [
-            {
-                path: "example",
-                component: require('./component/ExampleComponent').default,
-                name: 'admin.example'
-            },
             {
                 path: "invoice",
                 component: require('./component/admin/InvoiceComponent').default,

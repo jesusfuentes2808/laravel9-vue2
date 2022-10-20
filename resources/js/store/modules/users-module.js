@@ -6,6 +6,7 @@ const state = {
     user: null,
     userNotificationErrorCreate: {submit: false},
     token: null,
+    userNotificationLogin: {submit: false},
 };
 
 const getters = {
@@ -13,16 +14,19 @@ const getters = {
     user: state => state.user,
     token: state => state.token,
     userNotificationErrorCreate: state => state.userNotificationErrorCreate,
+    userNotificationLogin: state => state.userNotificationLogin,
 };
 
 const actions = {
-    async fetchUsers({commit}){
-        const response = await axios.get("http://localhost:3000/users");
-        commit("setUsers", response.data);
-    },
     async login({commit}, user){
-        const response = await axios.post(route('auth.login'), user);
-        commit("setToken", response.data);
+        commit("setUserNotificationLogin", {submit: false});
+        axios.post(route('auth.login'), user).then((response) => {
+            commit("setToken", response.data);
+            commit("setUserNotificationLogin",{submit: true, response: response.data});
+        }).catch((error) => {
+            commit("setUserNotificationLogin",{submit: true, response: error.response.data});
+        });
+
     },
     async getToken({commit}){
         commit('getToken');
@@ -32,17 +36,13 @@ const actions = {
         axios.post(route("auth.register"), user).then((response) => {
             commit("setUserNotificationErrorCreate", {submit: true, response: response.data})
         }).catch((error) => {
-            console.log(error.response.data);
             commit("setUserNotificationErrorCreate", {submit: true, response: error.response.data});
         });
-
-        //commit("addNewUser", response.data);
     },
-    async deleteUser({commit}, id){
-        await axios.delete(`http://localhost:3000/users/${id}`);
-        commit("removeUser", id)
-    },
+    async closeSession({commit}){
 
+        commit('deleteToken');
+    }
 };
 
 const mutations = {
@@ -50,6 +50,16 @@ const mutations = {
         state.token = {token: data.data, expires_at: data.expires_at};
         storage.set('token', {token: data.data, expires_at: data.expires_at});
     },
+
+    setUserNotificationLogin: (state, status) => {
+        state.userNotificationLogin = status;
+    },
+
+    deleteToken(state){
+        storage.remove('token');
+        state.token = null;
+    },
+
     getToken: (state) => {
         state.token = storage.get('token') ?? null;
     },

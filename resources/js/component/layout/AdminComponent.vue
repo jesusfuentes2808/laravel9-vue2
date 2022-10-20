@@ -16,6 +16,8 @@
                     </li>
                 </ul>
                 <form class="form-inline my-2 my-md-0"> </form>
+                <div style="color: white; float: right">
+                    <a href="#" style="color: white; text-decoration: underline" @click.prevent="closeSessionLocal">Cerrar Sesiòn</a></div>
             </div>
         </nav>
         <div id="wrapper" class="toggled">
@@ -43,15 +45,28 @@
 </template>
 
 <script>
-    import {mapActions, mapState} from "vuex";
+import {mapActions, mapGetters} from "vuex";
 
     export default {
         mounted() {
             this.setIVA();
         },
         methods: {
-            ...mapActions(["setIVA"]),
+            ...mapActions(["setIVA", "closeSession"]),
+            closeSessionLocal: function(){
+                this.closeSession();
+            }
         },
+        computed: mapGetters(["token"]),
+        watch:{
+            token(newValue){
+                if(newValue === null){
+                    this.$router.push({
+                        path: "/"
+                    })
+                }
+            }
+        }
     }
 </script>
 <style>
